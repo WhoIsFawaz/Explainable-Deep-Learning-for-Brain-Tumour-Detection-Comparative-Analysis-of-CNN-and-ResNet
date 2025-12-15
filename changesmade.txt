@@ -1,0 +1,2 @@
+split ratio now 70/15/15
+dont forget to edit report to remove ; and -- signs from genai
