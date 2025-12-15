@@ -1,0 +1,6 @@
+dataset/
+dataset_processed/
+venv/
+
+interim_report.md
+requirements.txt
