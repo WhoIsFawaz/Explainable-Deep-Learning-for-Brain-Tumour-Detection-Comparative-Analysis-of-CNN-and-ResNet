@@ -32,7 +32,10 @@ class Config:
     # Session
     SESSION_TYPE = 'filesystem'
     SESSION_PERMANENT = False
-    SESSION_USE_SIGNER = True
+    SESSION_USE_SIGNER = False  # Disabled to avoid bytes/string issue
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+    SESSION_COOKIE_HTTPONLY = True
     
     # CORS
     CORS_ORIGINS = ['http://localhost:5173', 'http://localhost:3000']

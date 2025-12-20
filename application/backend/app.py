@@ -2,7 +2,7 @@
 Brain MRI Classification System - Flask Backend
 Main application entry point
 """
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_session import Session
 import os
@@ -16,7 +16,11 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Configure CORS (allow frontend to communicate)
-CORS(app, supports_credentials=True, origins=Config.CORS_ORIGINS)
+CORS(app, 
+     supports_credentials=True, 
+     resources={r"/api/*": {"origins": "http://localhost:3000"}},
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
 # Configure server-side sessions
 Session(app)
@@ -28,6 +32,17 @@ os.makedirs(Config.GRADCAM_FOLDER, exist_ok=True)
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(predict_bp)
+
+# Serve static files (Grad-CAM outputs and uploaded images)
+@app.route('/gradcam_outputs/<path:filename>')
+def serve_gradcam(filename):
+    """Serve Grad-CAM output images"""
+    return send_from_directory(Config.GRADCAM_FOLDER, filename)
+
+@app.route('/uploads/<path:filename>')
+def serve_uploads(filename):
+    """Serve uploaded MRI images"""
+    return send_from_directory(Config.UPLOAD_FOLDER, filename)
 
 # Health check endpoint
 @app.route('/health', methods=['GET'])
