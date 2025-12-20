@@ -2,5 +2,10 @@ dataset/
 dataset_processed/
 venv/
 
+application/backend/__pycache__/
+application/backend/temp/
+application/backend/venv/
+application/backend/flask_session/
+
 interim_report.md
 requirements.txt
