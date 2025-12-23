@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import UploadSection from './UploadSection';
-import ResultsView from './ResultsView';
-import HistoryView from './HistoryView';
+import DoctorUpload from './DoctorUpload';
+import DoctorResults from './DoctorResults';
+import DoctorHistory from './DoctorHistory';
 
-function Dashboard({ user, onLogout }) {
+function DoctorDashboard({ user, onLogout }) {
   const [activeTab, setActiveTab] = useState('upload');
   const [latestResult, setLatestResult] = useState(null);
 
@@ -19,14 +19,14 @@ function Dashboard({ user, onLogout }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Brain MRI Classifier</h1>
-                <p className="text-sm text-gray-600">AI-Powered Tumor Detection</p>
+                <h1 className="text-2xl font-bold text-gray-900">Doctor Dashboard</h1>
+                <p className="text-sm text-gray-600">Brain MRI Analysis System</p>
               </div>
             </div>
             
@@ -77,7 +77,7 @@ function Dashboard({ user, onLogout }) {
                 : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
             }`}
           >
-            History
+            Patient History
           </button>
         </nav>
       </div>
@@ -85,17 +85,17 @@ function Dashboard({ user, onLogout }) {
       {/* Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'upload' && (
-          <UploadSection onPredictionComplete={handlePredictionComplete} />
+          <DoctorUpload onPredictionComplete={handlePredictionComplete} />
         )}
         {activeTab === 'results' && (
-          <ResultsView result={latestResult} />
+          <DoctorResults result={latestResult} />
         )}
         {activeTab === 'history' && (
-          <HistoryView />
+          <DoctorHistory />
         )}
       </main>
     </div>
   );
 }
 
-export default Dashboard;
+export default DoctorDashboard;

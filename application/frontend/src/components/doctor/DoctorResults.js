@@ -1,6 +1,6 @@
-import { getImageUrl } from '../api';
+import { getImageUrl } from '../../api';
 
-function ResultsView({ result }) {
+function DoctorResults({ result }) {
   if (!result) {
     return (
       <div className="bg-white rounded-xl shadow-md p-8 text-center">
@@ -13,7 +13,7 @@ function ResultsView({ result }) {
   }
 
   const isTumor = result.predicted_label === 'tumor';
-  const confidence = (result.confidence * 100).toFixed(2);
+  const confidence = (result.confidence * 100).toFixed(5); // 5 decimal places
 
   return (
     <div className="space-y-6">
@@ -46,7 +46,7 @@ function ResultsView({ result }) {
           <div className="bg-white rounded-lg p-4 shadow">
             <p className="text-sm text-gray-600 mb-1">Tumor Probability</p>
             <p className="text-2xl font-bold text-red-600">
-              {(result.probabilities.tumor * 100).toFixed(2)}%
+              {(result.probabilities.tumor * 100).toFixed(5)}%
             </p>
             <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
               <div
@@ -58,7 +58,7 @@ function ResultsView({ result }) {
           <div className="bg-white rounded-lg p-4 shadow">
             <p className="text-sm text-gray-600 mb-1">No Tumor Probability</p>
             <p className="text-2xl font-bold text-green-600">
-              {(result.probabilities.no_tumor * 100).toFixed(2)}%
+              {(result.probabilities.no_tumor * 100).toFixed(5)}%
             </p>
             <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
               <div
@@ -79,7 +79,6 @@ function ResultsView({ result }) {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Original Image */}
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">Original MRI</p>
             <img
@@ -89,7 +88,6 @@ function ResultsView({ result }) {
             />
           </div>
 
-          {/* Heatmap */}
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">Grad-CAM Heatmap</p>
             <img
@@ -99,7 +97,6 @@ function ResultsView({ result }) {
             />
           </div>
 
-          {/* Overlay */}
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">Overlay</p>
             <img
@@ -110,7 +107,6 @@ function ResultsView({ result }) {
           </div>
         </div>
 
-        {/* Disclaimer */}
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-xs text-blue-800">
             <strong>Note:</strong> Heatmap indicates regions influencing model prediction; not a substitute for radiologist diagnosis. 
@@ -139,4 +135,4 @@ function ResultsView({ result }) {
   );
 }
 
-export default ResultsView;
+export default DoctorResults;

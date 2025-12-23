@@ -1,23 +1,36 @@
-import { useState } from 'react';
-import { predictImage } from '../api';
+import { useState, useEffect } from 'react';
+import { getPatients, predictImage } from '../../api';
 
-function UploadSection({ onPredictionComplete }) {
+function DoctorUpload({ onPredictionComplete }) {
+  const [patients, setPatients] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    loadPatients();
+  }, []);
+
+  const loadPatients = async () => {
+    try {
+      const data = await getPatients();
+      setPatients(data.patients);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       setError('Please select an image file');
       return;
     }
 
-    // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
       setError('File size must be less than 10MB');
       return;
@@ -26,7 +39,6 @@ function UploadSection({ onPredictionComplete }) {
     setSelectedFile(file);
     setError('');
 
-    // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setPreview(reader.result);
@@ -35,8 +47,13 @@ function UploadSection({ onPredictionComplete }) {
   };
 
   const handleUpload = async () => {
+    if (!selectedPatient) {
+      setError('Please select a patient');
+      return;
+    }
+
     if (!selectedFile) {
-      setError('Please select an image first');
+      setError('Please select an image');
       return;
     }
 
@@ -44,7 +61,7 @@ function UploadSection({ onPredictionComplete }) {
     setError('');
 
     try {
-      const result = await predictImage(selectedFile);
+      const result = await predictImage(selectedFile, selectedPatient);
       onPredictionComplete(result.prediction);
     } catch (err) {
       setError(err.message || 'Prediction failed');
@@ -61,14 +78,32 @@ function UploadSection({ onPredictionComplete }) {
 
   return (
     <div className="bg-white rounded-xl shadow-md p-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Upload Brain MRI Scan</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Upload Patient MRI Scan</h2>
 
-      {/* Error Message */}
       {error && (
         <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
           <p className="text-sm">{error}</p>
         </div>
       )}
+
+      {/* Patient Selector */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Select Patient <span className="text-red-600">*</span>
+        </label>
+        <select
+          value={selectedPatient}
+          onChange={(e) => setSelectedPatient(e.target.value)}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+        >
+          <option value="">-- Choose a patient --</option>
+          {patients.map((patient) => (
+            <option key={patient.id} value={patient.id}>
+              {patient.name} ({patient.email})
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* Upload Area */}
       <div className="mb-6">
@@ -123,7 +158,7 @@ function UploadSection({ onPredictionComplete }) {
       <div className="flex space-x-4">
         <button
           onClick={handleUpload}
-          disabled={!selectedFile || loading}
+          disabled={!selectedPatient || !selectedFile || loading}
           className="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
@@ -160,4 +195,4 @@ function UploadSection({ onPredictionComplete }) {
   );
 }
 
-export default UploadSection;
+export default DoctorUpload;

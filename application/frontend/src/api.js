@@ -85,15 +85,118 @@ export const predictImage = async (imageFile, patientId = null) => {
 
 /**
  * Get prediction history
+ * @param {number} patient_id (for doctors)
+ * @param {number} doctor_id (for patients)
  */
-export const getPredictionHistory = async () => {
-  const response = await fetch(`${API_BASE_URL}/api/predictions/history`, {
+export const getPredictionHistory = async (filters = {}) => {
+  const params = new URLSearchParams();
+  if (filters.patient_id) params.append('patient_id', filters.patient_id);
+  if (filters.doctor_id) params.append('doctor_id', filters.doctor_id);
+  
+  const response = await fetch(`${API_BASE_URL}/api/predictions/history?${params}`, {
     credentials: 'include'
   });
   
   const data = await response.json();
   if (!response.ok) {
     throw new Error(data.message || 'Failed to fetch history');
+  }
+  return data;
+};
+
+/**
+ * Get list of patients (for doctors)
+ */
+export const getPatients = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/patients`, {
+    credentials: 'include'
+  });
+  
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to fetch patients');
+  }
+  return data;
+};
+
+/**
+ * Get list of doctors (for patients)
+ */
+export const getDoctors = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/doctors`, {
+    credentials: 'include'
+  });
+  
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to fetch doctors');
+  }
+  return data;
+};
+
+/**
+ * Admin: Get all users
+ */
+export const getAllUsers = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
+    credentials: 'include'
+  });
+  
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to fetch users');
+  }
+  return data;
+};
+
+/**
+ * Admin: Create doctor
+ */
+export const createDoctor = async (name, email, password) => {
+  const response = await fetch(`${API_BASE_URL}/api/admin/create-doctor`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ name, email, password })
+  });
+  
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to create doctor');
+  }
+  return data;
+};
+
+/**
+ * Admin: Create patient
+ */
+export const createPatient = async (name, email, password) => {
+  const response = await fetch(`${API_BASE_URL}/api/admin/create-patient`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ name, email, password })
+  });
+  
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to create patient');
+  }
+  return data;
+};
+
+/**
+ * Admin: Delete user
+ */
+export const deleteUser = async (userId) => {
+  const response = await fetch(`${API_BASE_URL}/api/admin/delete-user/${userId}`, {
+    method: 'DELETE',
+    credentials: 'include'
+  });
+  
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to delete user');
   }
   return data;
 };

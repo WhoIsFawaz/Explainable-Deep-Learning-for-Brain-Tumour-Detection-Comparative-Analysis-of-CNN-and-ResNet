@@ -10,6 +10,7 @@ import os
 from config import Config
 from routes.auth import auth_bp
 from routes.predict import predict_bp
+from routes.admin import admin_bp
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -31,6 +32,7 @@ os.makedirs(Config.GRADCAM_FOLDER, exist_ok=True)
 
 # Register blueprints
 app.register_blueprint(auth_bp)
+app.register_blueprint(admin_bp)
 app.register_blueprint(predict_bp)
 
 # Serve static files (Grad-CAM outputs and uploaded images)

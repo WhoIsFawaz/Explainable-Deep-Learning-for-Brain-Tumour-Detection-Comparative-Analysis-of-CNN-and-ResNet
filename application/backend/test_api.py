@@ -153,7 +153,7 @@ def main():
         
         # Test 4: Prediction (need sample image)
         # Update this path to a real MRI image from your test dataset
-        sample_image = "../../dataset_processed/test/yes/Y1.jpg"
+        sample_image = "../../dataset_processed/test/yes/y18.jpg"
         prediction_id = test_prediction(session, sample_image)
         
         # Test 5: Get prediction by ID

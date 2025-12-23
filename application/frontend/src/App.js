@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import Login from './components/Login';
-import Dashboard from './components/Dashboard';
+import AdminDashboard from './components/admin/AdminDashboard';
+import DoctorDashboard from './components/doctor/DoctorDashboard';
+import PatientDashboard from './components/patient/PatientDashboard';
 import { login as apiLogin, logout as apiLogout, getCurrentUser } from './api';
 
 function App() {
@@ -47,15 +49,20 @@ function App() {
     );
   }
 
-  return (
-    <div className="App">
-      {user ? (
-        <Dashboard user={user} onLogout={handleLogout} />
-      ) : (
-        <Login onLogin={handleLogin} />
-      )}
-    </div>
-  );
+  if (!user) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  // Route based on user role
+  if (user.role === 'admin') {
+    return <AdminDashboard user={user} onLogout={handleLogout} />;
+  } else if (user.role === 'doctor') {
+    return <DoctorDashboard user={user} onLogout={handleLogout} />;
+  } else if (user.role === 'patient') {
+    return <PatientDashboard user={user} onLogout={handleLogout} />;
+  }
+
+  return <div>Unknown role</div>;
 }
 
 export default App;

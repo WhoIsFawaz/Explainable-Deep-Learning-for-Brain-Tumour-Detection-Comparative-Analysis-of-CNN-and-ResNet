@@ -195,51 +195,67 @@ def get_prediction(prediction_id):
 @predict_bp.route('/predictions/history', methods=['GET'])
 def get_predictions_history():
     """
-    Get prediction history for current user
+    Get prediction history
+    - Doctors: Can filter by patient_id or see all their predictions
+    - Patients: See only their own predictions filtered by doctor_id
     
-    Response JSON:
-        {
-            "success": true,
-            "predictions": [
-                {
-                    "id": 123,
-                    "predicted_label": "tumor",
-                    "confidence": 0.9523,
-                    "uploaded_at": "2025-12-19T10:30:00"
-                },
-                ...
-            ]
-        }
+    Query params:
+        - patient_id (for doctors)
+        - doctor_id (for patients)
     """
     try:
-        # Check authentication
         if 'user_id' not in session:
             return jsonify({'success': False, 'message': 'Authentication required'}), 401
         
         user_id = session['user_id']
         user_role = session['user_role']
+        patient_id = request.args.get('patient_id', type=int)
+        doctor_id = request.args.get('doctor_id', type=int)
         
-        # Query based on role
-        if user_role == 'doctor' or user_role == 'admin':
-            # Doctors see all predictions they uploaded
-            query = """
-                SELECT id, predicted_label, prob_tumor, prob_no_tumor, 
-                       uploaded_at, patient_id
-                FROM images 
-                WHERE doctor_id = %s 
-                ORDER BY uploaded_at DESC
-            """
-            predictions = execute_query(query, (user_id,))
+        if user_role == 'doctor':
+            # Doctor viewing specific patient or all patients
+            if patient_id:
+                query = """
+                    SELECT i.*, p.name as patient_name 
+                    FROM images i 
+                    JOIN users p ON i.patient_id = p.id 
+                    WHERE i.doctor_id = %s AND i.patient_id = %s 
+                    ORDER BY i.uploaded_at DESC
+                """
+                predictions = execute_query(query, (user_id, patient_id))
+            else:
+                query = """
+                    SELECT i.*, p.name as patient_name 
+                    FROM images i 
+                    JOIN users p ON i.patient_id = p.id 
+                    WHERE i.doctor_id = %s 
+                    ORDER BY i.uploaded_at DESC
+                """
+                predictions = execute_query(query, (user_id,))
+        
+        elif user_role == 'patient':
+            # Patient viewing specific doctor or all doctors
+            if doctor_id:
+                query = """
+                    SELECT i.*, d.name as doctor_name 
+                    FROM images i 
+                    JOIN users d ON i.doctor_id = d.id 
+                    WHERE i.patient_id = %s AND i.doctor_id = %s 
+                    ORDER BY i.uploaded_at DESC
+                """
+                predictions = execute_query(query, (user_id, doctor_id))
+            else:
+                query = """
+                    SELECT i.*, d.name as doctor_name 
+                    FROM images i 
+                    JOIN users d ON i.doctor_id = d.id 
+                    WHERE i.patient_id = %s 
+                    ORDER BY i.uploaded_at DESC
+                """
+                predictions = execute_query(query, (user_id,))
+        
         else:
-            # Patients see only their own predictions
-            query = """
-                SELECT id, predicted_label, prob_tumor, prob_no_tumor, 
-                       uploaded_at, doctor_id
-                FROM images 
-                WHERE patient_id = %s 
-                ORDER BY uploaded_at DESC
-            """
-            predictions = execute_query(query, (user_id,))
+            return jsonify({'success': False, 'message': 'Invalid role'}), 403
         
         # Add confidence field
         for pred in predictions:
@@ -248,13 +264,44 @@ def get_predictions_history():
             else:
                 pred['confidence'] = float(pred['prob_no_tumor'])
         
-        return jsonify({
-            'success': True,
-            'predictions': predictions
-        }), 200
+        return jsonify({'success': True, 'predictions': predictions}), 200
         
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Error retrieving history: {str(e)}'
-        }), 500
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@predict_bp.route('/patients', methods=['GET'])
+def get_patients():
+    """Get list of patients for doctor's dropdown"""
+    try:
+        if 'user_id' not in session or session['user_role'] != 'doctor':
+            return jsonify({'success': False, 'message': 'Doctor access required'}), 403
+        
+        query = "SELECT id, name, email FROM users WHERE role = 'patient' ORDER BY name"
+        patients = execute_query(query)
+        
+        return jsonify({'success': True, 'patients': patients}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@predict_bp.route('/doctors', methods=['GET'])
+def get_doctors():
+    """Get list of doctors for patient's dropdown"""
+    try:
+        if 'user_id' not in session or session['user_role'] != 'patient':
+            return jsonify({'success': False, 'message': 'Patient access required'}), 403
+        
+        # Get doctors who have treated this patient
+        patient_id = session['user_id']
+        query = """
+            SELECT DISTINCT u.id, u.name, u.email 
+            FROM users u 
+            JOIN images i ON u.id = i.doctor_id 
+            WHERE i.patient_id = %s AND u.role = 'doctor'
+            ORDER BY u.name
+        """
+        doctors = execute_query(query, (patient_id,))
+        
+        return jsonify({'success': True, 'doctors': doctors}), 200
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
