@@ -37,7 +37,8 @@ CREATE TABLE images (
     doctor_id INT NOT NULL,
     patient_id INT NOT NULL,
     original_image_uri VARCHAR(500) NOT NULL,
-    gradcam_image_uri VARCHAR(500) DEFAULT NULL,
+    heatmap_image_uri VARCHAR(500) NOT NULL,
+    overlay_image_uri VARCHAR(500) NOT NULL,
     predicted_label VARCHAR(50) NOT NULL,
     prob_tumor DECIMAL(7, 6) NOT NULL,
     prob_no_tumor DECIMAL(7, 6) NOT NULL,
@@ -57,9 +58,9 @@ CREATE TABLE images (
 -- ==================================================================================
 -- Password: "admin123" hashed with bcrypt
 INSERT INTO users (name, email, password_hash, role) VALUES
-('System Administrator', 'admin@test.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5lZJr3Z.eLJIO', 'admin'),
-('Dr. Sarah Johnson', 'doctor@test.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5lZJr3Z.eLJIO', 'doctor'),
-('John Doe', 'patient@test.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5lZJr3Z.eLJIO', 'patient');
+('System Administrator', 'admin@test.com', '$2b$12$wNPaiC9Pl/P1grghRz0JS.L1PYyERmlBpnxjcmoOU925mBRJ7A.aq', 'admin'),
+('Dr. Sarah Johnson', 'doctor@test.com', '$2b$12$wNPaiC9Pl/P1grghRz0JS.L1PYyERmlBpnxjcmoOU925mBRJ7A.aq', 'doctor'),
+('John Doe', 'patient@test.com', '$2b$12$wNPaiC9Pl/P1grghRz0JS.L1PYyERmlBpnxjcmoOU925mBRJ7A.aq', 'patient');
 
 -- ==================================================================================
 -- Verification Queries

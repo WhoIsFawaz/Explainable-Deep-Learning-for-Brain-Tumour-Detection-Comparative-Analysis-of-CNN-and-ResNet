@@ -135,7 +135,7 @@ function PatientHistory() {
                   <div>
                     <p className="text-xs font-semibold text-gray-700 mb-2">Heatmap</p>
                     <img
-                      src={getImageUrl(record.gradcam_image_uri.replace('_overlay', '_heatmap'))}
+                      src={getImageUrl(record.heatmap_image_uri)}
                       alt="Heatmap"
                       className="w-full h-auto rounded border border-gray-300"
                     />
@@ -143,7 +143,7 @@ function PatientHistory() {
                   <div>
                     <p className="text-xs font-semibold text-gray-700 mb-2">Overlay</p>
                     <img
-                      src={getImageUrl(record.gradcam_image_uri)}
+                      src={getImageUrl(record.overlay_image_uri)}
                       alt="Overlay"
                       className="w-full h-auto rounded border border-gray-300"
                     />

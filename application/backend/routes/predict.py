@@ -105,19 +105,21 @@ def predict():
         )
         
         # Store prediction in database
+        # Store all 3 processed images from gradcam_outputs (consistent sizing)
         insert_query = """
             INSERT INTO images 
-            (doctor_id, patient_id, original_image_uri, gradcam_image_uri, 
+            (doctor_id, patient_id, original_image_uri, heatmap_image_uri, overlay_image_uri,
              predicted_label, prob_tumor, prob_no_tumor)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
         prediction_id = execute_query(
             insert_query,
             (
                 doctor_id,
                 patient_id,
-                file_path,
-                gradcam_paths['overlay'],
+                gradcam_paths['original'],   # Use processed original from gradcam_outputs
+                gradcam_paths['heatmap'],    # Heatmap from gradcam_outputs
+                gradcam_paths['overlay'],    # Overlay from gradcam_outputs
                 predicted_label,
                 probabilities['tumor'],
                 probabilities['no_tumor']

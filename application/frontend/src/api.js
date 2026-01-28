@@ -3,7 +3,8 @@
  * Handles all HTTP requests to Flask API
  */
 
-const API_BASE_URL = 'http://localhost:5000';
+// Use environment variable for production, fallback to localhost for development
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 /**
  * Login user

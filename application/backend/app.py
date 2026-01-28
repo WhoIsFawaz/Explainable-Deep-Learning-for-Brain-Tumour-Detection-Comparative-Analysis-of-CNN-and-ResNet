@@ -16,10 +16,10 @@ from routes.admin import admin_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Configure CORS (allow frontend to communicate)
+# Configure CORS (allow frontend to communicate - dynamic from config)
 CORS(app, 
      supports_credentials=True, 
-     resources={r"/api/*": {"origins": "http://localhost:3000"}},
+     resources={r"/api/*": {"origins": Config.CORS_ORIGINS}},
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
