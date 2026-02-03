@@ -6,6 +6,16 @@ application/backend/__pycache__/
 application/backend/temp/
 application/backend/venv/
 application/backend/flask_session/
+application/backend/deploy
+application/backend/backend-deploy.zip
+
+application/frontend/node_modules/
+application/frontend/.env.production
 
 interim_report.md
+ieeeDraft.md
+results_section_draft.md
+keys.txt
+
 requirements.txt
+

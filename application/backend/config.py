@@ -33,9 +33,13 @@ class Config:
     SESSION_TYPE = 'filesystem'
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = False  # Disabled to avoid bytes/string issue
-    SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-origin in production
-    SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'  # True in production with HTTPS
+    #SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-origin in production
+    #SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False') == 'True'  # True in production with HTTPS
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = False
+    
     SESSION_COOKIE_HTTPONLY = True
     
     # CORS - Add Azure frontend URL
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000').split(',')
+    #CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000').split(',')
+    CORS_ORIGINS = ['http://localhost:5173', 'http://localhost:3000']
