@@ -1,0 +1,28 @@
+# Flask Backend Dependencies
+flask==3.0.0
+flask-cors==4.0.0
+flask-session==0.5.0
+
+# Deep Learning
+torch>=2.2.0
+torchvision>=0.17.0
+
+# Image Processing
+opencv-python==4.8.1.78
+Pillow==10.1.0
+numpy==1.26.2
+
+# Database
+PyMySQL==1.1.0
+
+# Security
+bcrypt==4.1.1
+
+# Utilities
+python-dotenv==1.0.0
+
+# Production Server
+gunicorn==21.2.0
+
+# Azure Blob Storage
+azure-storage-blob==12.19.0
