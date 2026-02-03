@@ -3,9 +3,10 @@ flask==3.0.0
 flask-cors==4.0.0
 flask-session==0.5.0
 
-# Deep Learning
-torch>=2.2.0
-torchvision>=0.17.0
+# Deep Learning (CPU-only for Azure Free tier - smaller size)
+torch==2.2.0+cpu
+torchvision==0.17.0+cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
 
 # Image Processing
 opencv-python==4.8.1.78
