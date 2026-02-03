@@ -8,9 +8,9 @@ application/backend/venv/
 application/backend/flask_session/
 application/backend/deploy
 application/backend/backend-deploy.zip
+application/backend/.env
 
 application/frontend/node_modules/
-application/frontend/.env.production
 
 interim_report.md
 ieeeDraft.md
