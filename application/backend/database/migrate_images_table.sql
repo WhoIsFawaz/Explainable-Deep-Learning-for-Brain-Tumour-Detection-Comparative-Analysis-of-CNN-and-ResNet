@@ -23,5 +23,5 @@ WHERE overlay_image_uri IS NULL AND gradcam_image_uri IS NOT NULL;
 -- Step 3: Drop old column (optional - run after verifying migration)
 -- ALTER TABLE images DROP COLUMN gradcam_image_uri;
 
--- Verify
+-- Verifyy
 SELECT id, original_image_uri, heatmap_image_uri, overlay_image_uri FROM images LIMIT 5;
