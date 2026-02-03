@@ -104,13 +104,51 @@ def save_gradcam_to_storage(image_array, filename):
         
         return file_path
 
+def download_blob_to_temp(blob_url):
+    """
+    Download Azure Blob to temporary file
+    
+    Args:
+        blob_url: Full URL to Azure Blob
+    
+    Returns:
+        str: Path to temporary file
+    """
+    import tempfile
+    from azure.storage.blob import BlobServiceClient
+    
+    # Extract blob name and container from URL
+    # URL format: https://account.blob.core.windows.net/container/blobname
+    parts = blob_url.split('/')
+    container_name = parts[-2]
+    blob_name = parts[-1]
+    
+    # Download blob
+    blob_service = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
+    blob_client = blob_service.get_blob_client(container=container_name, blob=blob_name)
+    
+    # Create temp file
+    suffix = os.path.splitext(blob_name)[1]
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    
+    with open(temp_file.name, 'wb') as f:
+        f.write(blob_client.download_blob().readall())
+    
+    return temp_file.name
+
 def get_absolute_path(path_or_url):
     """
-    Get absolute path for local files, or return URL as-is for Azure
+    Get absolute path for local files, or download Azure blob to temp file
+    
+    Args:
+        path_or_url: Local path or Azure Blob URL
+    
+    Returns:
+        str: Absolute path to file (temp file if Azure URL)
     """
     if USE_AZURE_STORAGE and path_or_url.startswith('http'):
-        # It's already an Azure URL, return as-is
-        return path_or_url
+        # Download blob to temp file for processing
+        return download_blob_to_temp(path_or_url)
     return os.path.abspath(path_or_url)
 
 def delete_file(file_path):

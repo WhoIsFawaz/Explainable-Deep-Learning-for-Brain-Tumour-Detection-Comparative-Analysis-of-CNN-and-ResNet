@@ -9,9 +9,10 @@ from datetime import datetime
 from models.resnet50_model import get_model
 from models.gradcam import GradCAM, create_gradcam_overlay, save_gradcam_images
 from utils.preprocessing import preprocess_image, validate_image_file
-from utils.storage import save_uploaded_file, get_absolute_path
+from utils.storage import save_uploaded_file, get_absolute_path, USE_AZURE_STORAGE
 from database.db import execute_query
 from config import Config
+import os
 
 predict_bp = Blueprint('predict', __name__, url_prefix='/api')
 
@@ -70,30 +71,38 @@ def predict():
         file_path, file_id = save_uploaded_file(file)
         abs_file_path = get_absolute_path(file_path)
         
-        # Preprocess image
-        image_tensor, _ = preprocess_image(abs_file_path)
+        # Track if we need to clean up temp file
+        is_temp_file = USE_AZURE_STORAGE and abs_file_path.startswith('/tmp')
         
-        # Load model (singleton, loads once)
-        model = get_model()
-        
-        # Run prediction
-        predicted_class, probabilities = model.predict(image_tensor)
-        predicted_label = 'tumor' if predicted_class == 1 else 'no_tumor'
-        confidence = probabilities[predicted_label]
-        
-        # Generate Grad-CAM
-        target_layer = model.get_target_layer()
-        gradcam = GradCAM(model.model, target_layer)
-        
-        image_tensor_gradcam = image_tensor.to(model.device)
-        heatmap, _ = gradcam.generate_heatmap(image_tensor_gradcam, class_idx=predicted_class)
-        
-        # Create Grad-CAM overlay
-        original, heatmap_colored, overlay = create_gradcam_overlay(
-            abs_file_path, 
-            heatmap, 
-            img_size=Config.IMG_SIZE
-        )
+        try:
+            # Preprocess image
+            image_tensor, _ = preprocess_image(abs_file_path)
+            
+            # Load model (singleton, loads once)
+            model = get_model()
+            
+            # Run prediction
+            predicted_class, probabilities = model.predict(image_tensor)
+            predicted_label = 'tumor' if predicted_class == 1 else 'no_tumor'
+            confidence = probabilities[predicted_label]
+            
+            # Generate Grad-CAM
+            target_layer = model.get_target_layer()
+            gradcam = GradCAM(model.model, target_layer)
+            
+            image_tensor_gradcam = image_tensor.to(model.device)
+            heatmap, _ = gradcam.generate_heatmap(image_tensor_gradcam, class_idx=predicted_class)
+            
+            # Create Grad-CAM overlay
+            original, heatmap_colored, overlay = create_gradcam_overlay(
+                abs_file_path, 
+                heatmap, 
+                img_size=Config.IMG_SIZE
+            )
+        finally:
+            # Clean up temp file if it was downloaded from Azure
+            if is_temp_file and os.path.exists(abs_file_path):
+                os.remove(abs_file_path)
         
         # Save Grad-CAM images
         gradcam_paths = save_gradcam_images(
