@@ -8,8 +8,8 @@ torch==2.2.0+cpu
 torchvision==0.17.0+cpu
 --extra-index-url https://download.pytorch.org/whl/cpu
 
-# Image Processing
-opencv-python==4.8.1.78
+# Image Processing (headless for server deployment - no GUI dependencies)
+opencv-python-headless==4.8.1.78
 Pillow==10.1.0
 numpy==1.26.2
 
