@@ -116,36 +116,54 @@ def create_gradcam_overlay(original_image_path, heatmap, img_size=224, alpha=0.4
 
 def save_gradcam_images(output_dir, image_id, original, heatmap_colored, overlay):
     """
-    Save Grad-CAM visualization images to disk
+    Save Grad-CAM visualization images to storage (Azure Blob or local)
     
     Args:
-        output_dir: Directory to save images
+        output_dir: Directory to save images (used for local storage only)
         image_id: Unique identifier for this prediction
-        original: Original image array
-        heatmap_colored: Colored heatmap array
-        overlay: Overlay array
+        original: Original image array (RGB format)
+        heatmap_colored: Colored heatmap array (RGB format)
+        overlay: Overlay array (RGB format)
     
     Returns:
-        dict with paths to saved files
+        dict with paths/URLs to saved files
     """
+    from utils.storage import save_gradcam_to_storage, USE_AZURE_STORAGE
     import os
-    os.makedirs(output_dir, exist_ok=True)
     
     paths = {}
     
-    # Save original
-    original_path = os.path.join(output_dir, f"{image_id}_original.png")
-    cv2.imwrite(original_path, cv2.cvtColor(original, cv2.COLOR_RGB2BGR))
-    paths['original'] = original_path
-    
-    # Save heatmap
-    heatmap_path = os.path.join(output_dir, f"{image_id}_heatmap.png")
-    cv2.imwrite(heatmap_path, cv2.cvtColor(heatmap_colored, cv2.COLOR_RGB2BGR))
-    paths['heatmap'] = heatmap_path
-    
-    # Save overlay
-    overlay_path = os.path.join(output_dir, f"{image_id}_overlay.png")
-    cv2.imwrite(overlay_path, cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
-    paths['overlay'] = overlay_path
+    if USE_AZURE_STORAGE:
+        # Save to Azure Blob Storage - convert RGB to BGR for cv2
+        paths['original'] = save_gradcam_to_storage(
+            cv2.cvtColor(original, cv2.COLOR_RGB2BGR),
+            f"{image_id}_original.png"
+        )
+        paths['heatmap'] = save_gradcam_to_storage(
+            cv2.cvtColor(heatmap_colored, cv2.COLOR_RGB2BGR),
+            f"{image_id}_heatmap.png"
+        )
+        paths['overlay'] = save_gradcam_to_storage(
+            cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR),
+            f"{image_id}_overlay.png"
+        )
+    else:
+        # Save to local filesystem
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Save original
+        original_path = os.path.join(output_dir, f"{image_id}_original.png")
+        cv2.imwrite(original_path, cv2.cvtColor(original, cv2.COLOR_RGB2BGR))
+        paths['original'] = original_path
+        
+        # Save heatmap
+        heatmap_path = os.path.join(output_dir, f"{image_id}_heatmap.png")
+        cv2.imwrite(heatmap_path, cv2.cvtColor(heatmap_colored, cv2.COLOR_RGB2BGR))
+        paths['heatmap'] = heatmap_path
+        
+        # Save overlay
+        overlay_path = os.path.join(output_dir, f"{image_id}_overlay.png")
+        cv2.imwrite(overlay_path, cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+        paths['overlay'] = overlay_path
     
     return paths

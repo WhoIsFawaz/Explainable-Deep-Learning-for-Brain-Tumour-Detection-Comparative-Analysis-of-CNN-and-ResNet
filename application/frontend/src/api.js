@@ -220,9 +220,15 @@ export const getPrediction = async (id) => {
 
 /**
  * Build full URL for image/gradcam paths
+ * Handles both Azure Blob URLs (already full URLs) and local paths
  * @param {string} path 
  * @returns {string}
  */
 export const getImageUrl = (path) => {
+  // If it's already a full URL (Azure Blob Storage), return as-is
+  if (path && path.startsWith('http')) {
+    return path;
+  }
+  // Otherwise, prepend API base URL for local storage
   return `${API_BASE_URL}/${path}`;
 };
