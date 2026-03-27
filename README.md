@@ -15,34 +15,6 @@ Comparative analysis of CNN and ResNet models for binary brain MRI classificatio
 
 ---
 
-## Suggested README Visual Flow (where to place images)
-
-Use these images from `images_presentation/` in this order:
-
-1. **Project overview / system context**  
-   `images_presentation/clinicalWorkflowStages.jpg`
-2. **Model architecture comparison**  
-   `images_presentation/4modelArchitechtureDiagram.jpg`
-3. **Training behavior and result evidence**  
-   `images_presentation/simpleCNNTestResult.jpg`  
-   `images_presentation/deepCNNTestResult.jpg`  
-   `images_presentation/strongCNNTestResult.jpg`  
-   `images_presentation/resnet50TestResult.jpg`
-4. **Head-to-head performance**  
-   `images_presentation/simpleCNNAndResnet50ComparisonOfRocCurve.jpg`  
-   `images_presentation/resnet50ConfusionMatrix.jpg`
-5. **Explainability examples**  
-   `images_presentation/gradcamTumourExampleOriginalHeatmapOverlay.jpg`  
-   `images_presentation/gradcamNoTumorExampleOriginalHeatmapOverlay.jpg`
-6. **Deployment architecture**  
-   `images_presentation/azureCloudDeploymentArchitecture.jpg`
-7. **Live system screenshots**  
-   `images_presentation/demoUserLoginPage.jpg`  
-   `images_presentation/demoDoctorPredictionResultPage.jpg`  
-   `images_presentation/doctorPredictionHistoryPage.jpg`
-
----
-
 ## Overview
 
 Brain tumour assessment in MRI is difficult because of heterogeneous tumour appearance, acquisition variability, and overlap with normal tissue.  
@@ -217,9 +189,3 @@ python test_api.py
 
 ---
 
-## Citation
-
-If you use this project, please cite the capstone work:
-
-**Mohamed Faizal Mohamed Fawaz**  
-*Explainable Deep Learning for Brain Tumour Detection: Comparative Analysis of CNN and ResNet Models with Web-Based Deployment*.
